@@ -50,17 +50,17 @@ public class GsonTweetEater {
                 if (je.isJsonObject()) {
                     JsonObject jo = (JsonObject) je;
                     JsonElement user = jo.get("user");
+                    String source = jo.get("source").getAsString();
+                    Boolean isAndroid = source.matches(".*?\\bandroid\\b.*?");
                     // examine nested retrieved object, again to determine type
                 if(user.isJsonObject()) {
                     JsonObject juser = (JsonObject) user;
                     JsonElement name = juser.get("screen_name");
-                    word.set(name.getAsString());
-                    context.write(word, one);
+                    if (isAndroid) {
+                        word.set(name.getAsString());
+                        context.write(word, one);
+                    }
                 }
-//                else if (user.isJsonObject()){
-//                    JsonObject name = user.getAsJsonObject();
-//                    System.out.println(name.get("name"));
-//                }
 
                 }
 
