@@ -29,15 +29,14 @@ public class GsonTweetEater {
 
 
     public static class TokenizerMapper
-            extends Mapper<Object, Text, IntWritable, IntWritable>{
+            extends Mapper<Object, Text, Text, IntWritable>{
 
         private final static IntWritable one = new IntWritable(1);
-        private IntWritable word = new IntWritable();
+        private Text word = new Text();
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
 
-            // TODO your code here
             String line = value.toString();
 
             Gson gson = new Gson();
@@ -47,30 +46,30 @@ public class GsonTweetEater {
             // test to see what kind of object the Element is
             if(je.isJsonObject()){
                 JsonObject jo = (JsonObject) je;
-                System.out.println(jo.get("text"));
                 JsonElement user = jo.get("user");
                 // examine nested retrieved object, again to determine type
                 if(user.isJsonArray()) {
                     JsonArray arr = user.getAsJsonArray();
-                    JsonElement name = arr.get(0);
-                    System.out.println(name.toString());
+                    JsonElement name = arr.get(3);
+                    word.set(name.toString());
+                    context.write(word, one);
                 }
-                else if (user.isJsonObject()){
-                    JsonObject name = user.getAsJsonObject();
-                    System.out.println(name.get("name"));
-                }
-            }
+//                else if (user.isJsonObject()){
+//                    JsonObject name = user.getAsJsonObject();
+//                    System.out.println(name.get("name"));
+//                }
 
+            }
 
 
         }
     }
 
     public static class IntSumReducer
-            extends Reducer<IntWritable,IntWritable,IntWritable,IntWritable> {
+            extends Reducer<Text,IntWritable,Text,IntWritable> {
         private IntWritable result = new IntWritable();
 
-        public void reduce(IntWritable key, Iterable<IntWritable> values,
+        public void reduce(Text key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
             int sum = 0;
@@ -95,7 +94,7 @@ public class GsonTweetEater {
         job.setMapperClass(TokenizerMapper.class);
         job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
-        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
         // these lines are for dev purposes
