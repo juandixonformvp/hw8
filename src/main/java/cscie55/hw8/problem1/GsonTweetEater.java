@@ -49,14 +49,14 @@ public class GsonTweetEater {
                 // test to see what kind of object the Element is
                 if (je.isJsonObject()) {
                     JsonObject jo = (JsonObject) je;
-                    JsonElement user = jo.get("text");
+                    JsonElement user = jo.get("user");
                     // examine nested retrieved object, again to determine type
-//                if(user.isJsonArray()) {
-//                    JsonArray arr = user.getAsJsonArray();
-//                    JsonElement name = arr.get(3);
-                    word.set(user.getAsString());
+                if(user.isJsonObject()) {
+                    JsonObject juser = (JsonObject) user;
+                    JsonElement name = juser.get("screen_name");
+                    word.set(name.getAsString());
                     context.write(word, one);
-//                }
+                }
 //                else if (user.isJsonObject()){
 //                    JsonObject name = user.getAsJsonObject();
 //                    System.out.println(name.get("name"));
