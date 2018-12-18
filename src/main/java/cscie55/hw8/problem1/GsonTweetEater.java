@@ -34,15 +34,18 @@ public class GsonTweetEater {
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
 
+        Gson gson = new Gson();
+
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
 
+
             String line = value.toString();
 
-            Gson gson = new Gson();
 
                 // convert to generic JsonElement
                 JsonElement je = gson.fromJson(line, JsonElement.class);
+            if (je != null) {
                 // test to see what kind of object the Element is
                 if (je.isJsonObject()) {
                     JsonObject jo = (JsonObject) je;
@@ -61,7 +64,7 @@ public class GsonTweetEater {
 
                 }
 
-
+            }
 
         }
     }
