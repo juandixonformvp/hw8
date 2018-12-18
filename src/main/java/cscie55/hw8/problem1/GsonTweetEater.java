@@ -41,13 +41,13 @@ public class GsonTweetEater {
 
             Gson gson = new Gson();
 
-            // convert to generic JsonElement
-            JsonElement je = gson.fromJson(line, JsonElement.class);
-            // test to see what kind of object the Element is
-            if(je.isJsonObject()){
-                JsonObject jo = (JsonObject) je;
-                JsonElement user = jo.get("text");
-                // examine nested retrieved object, again to determine type
+                // convert to generic JsonElement
+                JsonElement je = gson.fromJson(line, JsonElement.class);
+                // test to see what kind of object the Element is
+                if (je.isJsonObject()) {
+                    JsonObject jo = (JsonObject) je;
+                    JsonElement user = jo.get("text");
+                    // examine nested retrieved object, again to determine type
 //                if(user.isJsonArray()) {
 //                    JsonArray arr = user.getAsJsonArray();
 //                    JsonElement name = arr.get(3);
@@ -59,7 +59,8 @@ public class GsonTweetEater {
 //                    System.out.println(name.get("name"));
 //                }
 
-            }
+                }
+
 
 
         }
