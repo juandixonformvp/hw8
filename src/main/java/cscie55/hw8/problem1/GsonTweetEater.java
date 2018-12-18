@@ -36,11 +36,33 @@ public class GsonTweetEater {
 
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
-            StringTokenizer itr = new StringTokenizer(value.toString().replaceAll("[^a-zA-Z ]", "").toLowerCase().trim());
-            while (itr.hasMoreTokens()) {
-                word.set(itr.nextToken().length());
-                context.write(word, one);
+
+            // TODO your code here
+            String line = value.toString();
+
+            Gson gson = new Gson();
+
+            // convert to generic JsonElement
+            JsonElement je = gson.fromJson(line, JsonElement.class);
+            // test to see what kind of object the Element is
+            if(je.isJsonObject()){
+                JsonObject jo = (JsonObject) je;
+                System.out.println(jo.get("text"));
+                JsonElement user = jo.get("user");
+                // examine nested retrieved object, again to determine type
+                if(user.isJsonArray()) {
+                    JsonArray arr = user.getAsJsonArray();
+                    JsonElement name = arr.get(0);
+                    System.out.println(name.toString());
+                }
+                else if (user.isJsonObject()){
+                    JsonObject name = user.getAsJsonObject();
+                    System.out.println(name.get("name"));
+                }
             }
+
+
+
         }
     }
 
