@@ -50,20 +50,23 @@ public class GsonTweetEater {
                 if (je.isJsonObject()) {
                     JsonObject jo = (JsonObject) je;
                     JsonElement user = jo.get("user");
-                    String source = jo.get("source").getAsString();
-                    Boolean isAndroid = source.matches(".*?\\bandroid\\b.*?");
-                    // examine nested retrieved object, again to determine type
-                if(user.isJsonObject()) {
-                    JsonObject juser = (JsonObject) user;
-                    JsonElement name = juser.get("screen_name");
-                    if (isAndroid) {
-                        word.set(name.getAsString());
-                        context.write(word, one);
+                    if (user != null) {
+                        String source = jo.get("source").getAsString();
+                        Boolean isAndroid = source.matches(".*?\\bandroid\\b.*?");
+                        // examine nested retrieved object, again to determine type
+                        if (user.isJsonObject()) {
+                            JsonObject juser = (JsonObject) user;
+                            JsonElement name = juser.get("screen_name");
+                            if (name != null) {
+                                if (isAndroid) {
+                                    word.set(name.getAsString());
+                                    context.write(word, one);
+                                }
+                            }
+                        }
+
                     }
                 }
-
-                }
-
             }
 
         }
@@ -88,9 +91,9 @@ public class GsonTweetEater {
     public static void main(String[] args) throws Exception {
         // these vars are tmp for dev purposes
         // comment these 3 lines before putting into a jar for running in AWS
-        String FILENAME = args[0];
-        String input = GsonTweetEater.class.getClassLoader().getResource(FILENAME).getFile();//("").getPath().replaceFirst("^/(.:/)", "$1");
-        String output = new String("target/")+args[1]; // replace real cmd line args w/ hard-coded
+//        String FILENAME = args[0];
+//        String input = GsonTweetEater.class.getClassLoader().getResource(FILENAME).getFile();//("").getPath().replaceFirst("^/(.:/)", "$1");
+//        String output = new String("target/")+args[1]; // replace real cmd line args w/ hard-coded
 
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "word count");
@@ -103,14 +106,14 @@ public class GsonTweetEater {
 
         // these lines are for dev purposes
         // comment these 2 lines before putting into a for running in AWS
-        FileInputFormat.addInputPath(job, new Path(input));
-        FileOutputFormat.setOutputPath(job, new Path(output));
+//        FileInputFormat.addInputPath(job, new Path(input));
+//        FileOutputFormat.setOutputPath(job, new Path(output));
 
 
         // UNCOMMENT these 2 lines before putting into a jar for running in AWS
 
-      //   FileInputFormat.addInputPath(job, new Path(args[0]));
-      //   FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }
